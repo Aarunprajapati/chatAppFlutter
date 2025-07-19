@@ -1,10 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart' show User;
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
-import 'package:myapp/pages/home_screen.dart';
-import 'package:myapp/pages/onBoardingScreen.dart';
-import 'package:myapp/providers/chat_provider.dart';
+import 'pages/onBoardingScreen.dart';
+import 'pages/home_screen.dart';
+import 'providers/chat_provider.dart';
+import 'providers/auth_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

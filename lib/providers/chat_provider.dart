@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import '../models/chat_model.dart';
 
-class ChatProvider {
+class ChatProvider with ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Stream<List<ChatModel>> getChats(String userId) {
@@ -24,22 +25,31 @@ class ChatProvider {
     required String receiverId,
     required String message,
   }) async {
-    final chatRef = _firestore.collection('chats').doc(chatId);
-    final messagesRef = chatRef.collection('messages');
+    try {
+      final chatRef = _firestore.collection('chats').doc(chatId);
+      final messagesRef = chatRef.collection('messages');
 
-    await chatRef.set({
-      'chatId': chatId,
-      'lastMessage': message,
-      'lastMessageTime': DateTime.now(),
-      'participants': [senderId, receiverId],
-    }, SetOptions(merge: true));
+      // Update chat document
+      await chatRef.set({
+        'chatId': chatId,
+        'lastMessage': message,
+        'lastMessageTime': DateTime.now(),
+        'participants': [senderId, receiverId],
+      }, SetOptions(merge: true));
 
-    await messagesRef.add({
-      'senderId': senderId,
-      'receiverId': receiverId,
-      'message': message,
-      'timestamp': DateTime.now(),
-    });
+      // Add new message
+      await messagesRef.add({
+        'senderId': senderId,
+        'receiverId': receiverId,
+        'message': message,
+        'timestamp': DateTime.now(),
+      });
+
+      notifyListeners(); // Notify listeners after sending message
+    } catch (e) {
+      print('Error sending message: $e');
+      rethrow;
+    }
   }
 
   Stream<QuerySnapshot> getMessages(String chatId) {
@@ -49,5 +59,29 @@ class ChatProvider {
         .collection('messages')
         .orderBy('timestamp', descending: false)
         .snapshots();
+  }
+
+  // Additional method to create or get existing chat
+  Future<String> getOrCreateChatId({
+    required String currentUserId,
+    required String otherUserId,
+  }) async {
+    // Sort user IDs to ensure consistent chatId
+    final participants = [currentUserId, otherUserId]..sort();
+    final chatId = participants.join('_');
+
+    // Check if chat already exists
+    final chatDoc = await _firestore.collection('chats').doc(chatId).get();
+    if (!chatDoc.exists) {
+      await _firestore.collection('chats').doc(chatId).set({
+        'chatId': chatId,
+        'participants': participants,
+        'createdAt': DateTime.now(),
+        'lastMessage': '',
+        'lastMessageTime': DateTime.now(),
+      });
+    }
+
+    return chatId;
   }
 }
