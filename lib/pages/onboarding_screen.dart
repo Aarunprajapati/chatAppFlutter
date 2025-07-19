@@ -36,6 +36,7 @@ class onBoardingScreen extends StatelessWidget {
               onPressed: () async {
                 final user = await authProvider.signInWithGoogle();
                 if (user != null) {
+                  // ignore: use_build_context_synchronously
                   Navigator.pushReplacementNamed(context, '/home');
                 }
               },

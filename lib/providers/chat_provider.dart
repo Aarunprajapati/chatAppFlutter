@@ -47,7 +47,6 @@ class ChatProvider with ChangeNotifier {
 
       notifyListeners(); // Notify listeners after sending message
     } catch (e) {
-      print('Error sending message: $e');
       rethrow;
     }
   }

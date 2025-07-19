@@ -1,8 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart' show User;
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-import 'pages/onBoardingScreen.dart';
+import 'pages/onboarding_screen.dart';
 import 'pages/home_screen.dart';
 import 'providers/chat_provider.dart';
 import 'providers/auth_provider.dart';
@@ -43,7 +42,7 @@ class AuthWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
 
-    return StreamBuilder<User?>(
+    return StreamBuilder(
       stream: authProvider.authStateChanges,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.active) {

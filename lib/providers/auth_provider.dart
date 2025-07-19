@@ -38,7 +38,6 @@ class AuthProvider with ChangeNotifier {
       }
       return null;
     } catch (e) {
-      print("Error signing in with Google: $e");
       return null;
     }
   }
